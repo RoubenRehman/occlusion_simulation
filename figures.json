@@ -1,0 +1,30 @@
+{
+    "fig1": {
+        "show": true,
+        "include_open_ear": true,
+        "include_perf_occl": true,
+        "ylim": [-80, 5],
+        "loc_legend": "outer"
+    },
+    "fig2": {
+        "show": true,
+        "include_open_ear": true,
+        "include_perf_occl": false,
+        "ylim": [-10, 10],
+        "loc_legend": "outer"
+    },
+    "fig3": {
+        "show": true,
+        "include_open_ear": true,
+        "include_perf_occl": false,
+        "ylim": [-10, 10],
+        "loc_legend": "inner"
+    },
+    "fig4": {
+        "show": true,
+        "include_open_ear": true,
+        "include_perf_occl": false,
+        "ylim": [100, 140],
+        "loc_legend": "inner"
+    }
+}

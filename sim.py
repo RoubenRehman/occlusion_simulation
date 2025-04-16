@@ -44,7 +44,7 @@ frequencies = np.array([])
 def eardrum_impedance(frequencies):
     # after Shaw & Stinson (1983)
     # parameters given in Fig. 7 in Schroeter & Pösselt (1986)
-    # Implementation taken from Kersten et. al (2024)
+    # Implementation taken from Kersten et. al (2024), DOI: 10.1121/10.0024244
     omega = 2*np.pi*frequencies
     iomega = 1j*omega
     K = 9

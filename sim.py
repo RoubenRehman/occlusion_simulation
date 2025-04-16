@@ -41,29 +41,6 @@ Z_ref = None
 freq_range = [100, 1500]
 frequencies = np.array([])
 
-## Fractional Octave Average taken from Kersten et. al. (2024)
-def fractional_octave_average(signal, num_fractions=3):
-    # Note: finite element results are interpreted as a sampled
-    # power density spectrum
-    frequency_range = (
-        np.floor(signal.frequencies[0]*2**(1/(2*num_fractions))),
-        np.ceil(signal.frequencies[-1]))
-    # Calculate center and cutoff frequencies
-    frequencies, _, cutoff_freq = pf.dsp.filter.fractional_octave_frequencies(
-        num_fractions=num_fractions, frequency_range=frequency_range,
-        return_cutoff=True)
-    # Calculate bandwidth per frequency
-    df = np.diff(np.sqrt(signal.frequencies[:-1]*signal.frequencies[1:]))
-    df = np.concatenate([[0], df, [0]])
-    # Averaging
-    freq = np.zeros_like(frequencies)
-    for i in range(len(freq)):
-        lower = signal.frequencies >= cutoff_freq[0][i]
-        higher = signal.frequencies < cutoff_freq[1][i]
-        mask = lower & higher
-        freq[i] = np.sqrt(np.sum(np.abs(signal.freq[0, mask])**2/2*df[mask]))
-    return pf.FrequencyData(freq, frequencies)
-
 def eardrum_impedance(frequencies):
     # after Shaw & Stinson (1983)
     # parameters given in Fig. 7 in Schroeter & Pösselt (1986)

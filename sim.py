@@ -470,7 +470,7 @@ if figures['fig4']['show']:
         color = measurements[collection_key]['conf']['color']
         linestyle = measurements[collection_key]['conf']['linestyle']
                
-        ax = pf.plot.freq(mean, label = f'Mean (bold) and std (shade) of {collectionkey}', color = color, linestyle = linestyle)
+        ax = pf.plot.freq(mean, label = f'Mean (bold) and std (shade) of {collection_key}', color = color, linestyle = linestyle)
         plt.fill_between( frequencies, 20*np.log10((mean-std).freq[0]), 20*np.log10((mean+std).freq[0]), color = color, alpha=0.2 )     
     
     ax.set_ylim(figures['fig4']['ylim'][0], figures['fig4']['ylim'][1])

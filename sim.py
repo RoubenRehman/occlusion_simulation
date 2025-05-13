@@ -1,5 +1,7 @@
 #%%
 import os
+import re
+import csv
 import json
 
 import numpy as np
@@ -9,7 +11,6 @@ import pyabsorp as pa
 import matplotlib.patches as mpatches
 
 from numpy import pi
-from pyutilsrre import rre_utils as rre
 
 ## Select what to plot:
 # Read figures configuration from figures.json
@@ -40,6 +41,59 @@ occl_plots = {}
 Z_ref = None
 freq_range = [100, 1500]
 frequencies = np.array([])
+
+def read_frequency_csv(file_path):
+    """
+    Reads a CSV file containing a freqency vector and corresponding complex measurement data.
+
+    Parameters:
+    - file_path (str): Path to the CSV file.
+
+    Returns:
+    - pf.FrequencyData: The data in Pyfar format
+    """
+    freqVec = []
+    freqDat = []
+    
+    # Regular expression to extract the real part from the frequency column
+    # This assumes the frequency column is always in the form 'number+0i' or 'number-0i'
+    freq_pattern = re.compile(r'^([-+]?\d*\.?\d+)(?:[+-]0i)$', re.IGNORECASE)
+    
+    # Open and read the CSV file
+    with open(file_path, 'r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        for row_num, row in enumerate(reader, start=1):
+            if len(row) != 2:
+                raise ValueError(f"Row {row_num} does not have exactly two columns: {row}")
+            
+            # Process the frequency column
+            freq_str = row[0].strip()
+            freq_match = freq_pattern.match(freq_str)
+            if not freq_match:
+                raise ValueError(f"Invalid frequency format in row {row_num}: '{freq_str}'")
+            freq_real = float(freq_match.group(1))
+            freqVec.append(freq_real)
+            
+            # Process the measurement column
+            dat_str = row[1].strip()
+            # Replace 'i' with 'j' for Python complex numbers
+            dat_str_python = dat_str.replace('i', 'j')
+            try:
+                dat_complex = complex(dat_str_python)
+            except ValueError as e:
+                raise ValueError(f"Invalid complex number format in row {row_num}: '{dat_str}'") from e
+                print(f'Cannot interpret data as complex, interpreting as dB values instead...')
+                dat_complex = 10 ** (float(dat_str) / 20)
+                dat_complex = complex(dat_complex, 0)
+            freqDat.append(dat_complex)
+    
+    # Convert lists to NumPy arrays for better performance and usability
+    freqVec = np.array(freqVec, dtype=np.float64)
+    freqDat = np.array(freqDat, dtype=np.complex128)
+
+    data = pf.FrequencyData(freqDat, freqVec)
+    
+    return data
 
 def eardrum_impedance(frequencies):
     # after Shaw & Stinson (1983)
@@ -120,7 +174,7 @@ def read_measurements():
                     print(f'Error reading config')
             if file.endswith('.csv'):
                 try:
-                    freqObjRaw = rre.read_frequency_csv(file_path = file_path)
+                    freqObjRaw = read_frequency_csv(file_path = file_path)
 
                     frequenciesRaw = freqObjRaw.frequencies
                     freqsRaw = freqObjRaw.freq[0]
@@ -177,7 +231,7 @@ def read_reference():
                 sel_file = files[choice-1]
                 print(f'{sel_file} selected')
 
-                freqObjRaw = rre.read_frequency_csv(file_path = os.path.join(ref_folder, sel_file))
+                freqObjRaw = read_frequency_csv(file_path = os.path.join(ref_folder, sel_file))
                 
                 frequenciesRaw = freqObjRaw.frequencies
                 freqsRaw = freqObjRaw.freq[0]
@@ -228,7 +282,7 @@ def read_occlusion_data():
                     print(f'Error reading config')
             if file.endswith('.csv'):
                 try:
-                    freqObjRaw = rre.read_frequency_csv(file_path = file_path)
+                    freqObjRaw = read_frequency_csv(file_path = file_path)
 
                     frequenciesRaw = freqObjRaw.frequencies
                     freqsRaw = freqObjRaw.freq[0]
@@ -419,7 +473,6 @@ if figures['fig3']['show']:
         std = occl_plots[key]['std']
         color = occl_plots[key]['conf']['color']
         linestyle = occl_plots[key]['conf']['linestyle']
-        print(key)
         ax = pf.plot.freq( mean, label = f'{key} mean', color = color, linestyle = linestyle)
         #plt.fill_between( frequencies, 20*np.log10((mean-std).freq[0]), 20*np.log10((mean+std).freq[0]), color = color, alpha=0.2 )
     

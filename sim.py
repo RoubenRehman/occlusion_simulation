@@ -414,14 +414,14 @@ if figures['fig3']['show']:
         ax = pf.plot.freq(mean / T_ref, label = f'Mean (bold) and std (shade) of {collectionkey}', color = conf['color'], linestyle = conf['linestyle'])
         plt.fill_between( frequencies, 20*np.log10(((mean-std) / T_ref).freq[0]), 20*np.log10(((mean+std) / T_ref).freq[0]), color = ax.lines[-1].get_color(), alpha=0.2 )
     
-    for collection_key in occl_plots:
-        mean = occl_plots[collection_key]['mean']
-        std = occl_plots[collection_key]['std']
+    for key in occl_plots:
+        mean = occl_plots[key]['mean']
+        std = occl_plots[key]['std']
         color = occl_plots[key]['conf']['color']
         linestyle = occl_plots[key]['conf']['linestyle']
-            
-        ax = pf.plot.freq( mean, label = f'{collection_key} mean', color = color, linestyle = linestyle)
-        plt.fill_between( frequencies, 20*np.log10((mean-std).freq[0]), 20*np.log10((mean+std).freq[0]), color = color, alpha=0.2 )
+        print(key)
+        ax = pf.plot.freq( mean, label = f'{key} mean', color = color, linestyle = linestyle)
+        #plt.fill_between( frequencies, 20*np.log10((mean-std).freq[0]), 20*np.log10((mean+std).freq[0]), color = color, alpha=0.2 )
     
     ax.set_ylim(figures['fig3']['ylim'][0], figures['fig3']['ylim'][1])
     

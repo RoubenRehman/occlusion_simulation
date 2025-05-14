@@ -78,14 +78,17 @@ def read_frequency_csv(file_path):
             dat_str = row[1].strip()
             # Replace 'i' with 'j' for Python complex numbers
             dat_str_python = dat_str.replace('i', 'j')
-            try:
-                dat_complex = complex(dat_str_python)
-            except ValueError as e:
-                raise ValueError(f"Invalid complex number format in row {row_num}: '{dat_str}'") from e
+            if 'j' in dat_str_python:
+                try:
+                    dat_complex = complex(dat_str_python)
+                except ValueError as e:
+                    raise ValueError(f"Cannot parse into complex number {row_num}: '{dat_str}'") from e
+                freqDat.append(dat_complex)
+            else:
                 print(f'Cannot interpret data as complex, interpreting as dB values instead...')
                 dat_complex = 10 ** (float(dat_str) / 20)
                 dat_complex = complex(dat_complex, 0)
-            freqDat.append(dat_complex)
+                freqDat.append(dat_complex)
     
     # Convert lists to NumPy arrays for better performance and usability
     freqVec = np.array(freqVec, dtype=np.float64)
@@ -465,7 +468,7 @@ if figures['fig3']['show']:
         mean = pf.FrequencyData(sum(abs(sig.freq[0]) for (_, sig) in T_measurements) / len(T_measurements), frequencies)
         std = pf.FrequencyData(np.sqrt(sum(( abs(sig.freq[0]) - abs(mean.freq[0])) ** 2 for (_, sig) in T_measurements) / len(T_measurements)), frequencies)
 
-        ax = pf.plot.freq(mean / T_ref, label = f'Mean (bold) and std (shade) of {collectionkey}', color = conf['color'], linestyle = conf['linestyle'])
+        ax = pf.plot.freq(mean / T_ref, label = f'{collectionkey} mean and std', color = conf['color'], linestyle = conf['linestyle'])
         plt.fill_between( frequencies, 20*np.log10(((mean-std) / T_ref).freq[0]), 20*np.log10(((mean+std) / T_ref).freq[0]), color = ax.lines[-1].get_color(), alpha=0.2 )
     
     for key in occl_plots:
@@ -473,7 +476,7 @@ if figures['fig3']['show']:
         std = occl_plots[key]['std']
         color = occl_plots[key]['conf']['color']
         linestyle = occl_plots[key]['conf']['linestyle']
-        ax = pf.plot.freq( mean, label = f'{key} mean', color = color, linestyle = linestyle)
+        ax = pf.plot.freq( mean, label = f'{key}', color = color, linestyle = linestyle, alpha = 0.2, linewidth = 5)
         #plt.fill_between( frequencies, 20*np.log10((mean-std).freq[0]), 20*np.log10((mean+std).freq[0]), color = color, alpha=0.2 )
     
     ax.set_ylim(figures['fig3']['ylim'][0], figures['fig3']['ylim'][1])

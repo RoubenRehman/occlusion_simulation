@@ -469,7 +469,7 @@ if figures['fig3']['show']:
         std = pf.FrequencyData(np.sqrt(sum(( abs(sig.freq[0]) - abs(mean.freq[0])) ** 2 for (_, sig) in T_measurements) / len(T_measurements)), frequencies)
 
         # Export mean as CSV
-        #mean_csv_path = f"mean_{collectionkey}.csv"
+        #mean_csv_path = f"output/mean_{collectionkey}.csv"
         #with open(mean_csv_path, "w", newline="") as csvfile:
         #    writer = csv.writer(csvfile)
         #    writer.writerow(["Frequency (Hz)", "Mean"])

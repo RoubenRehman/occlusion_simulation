@@ -17,7 +17,7 @@
         "show": true,
         "include_open_ear": true,
         "include_perf_occl": false,
-        "ylim": [-10, 10],
+        "ylim": [-10, 50],
         "loc_legend": "outer"
     },
     "fig4": {

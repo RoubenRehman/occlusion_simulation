@@ -468,6 +468,14 @@ if figures['fig3']['show']:
         mean = pf.FrequencyData(sum(abs(sig.freq[0]) for (_, sig) in T_measurements) / len(T_measurements), frequencies)
         std = pf.FrequencyData(np.sqrt(sum(( abs(sig.freq[0]) - abs(mean.freq[0])) ** 2 for (_, sig) in T_measurements) / len(T_measurements)), frequencies)
 
+        # Export mean as CSV
+        #mean_csv_path = f"mean_{collectionkey}.csv"
+        #with open(mean_csv_path, "w", newline="") as csvfile:
+        #    writer = csv.writer(csvfile)
+        #    writer.writerow(["Frequency (Hz)", "Mean"])
+        #    for f, m in zip(frequencies, mean.freq[0]):
+        #        writer.writerow([f, m])
+
         ax = pf.plot.freq(mean / T_ref, label = f'{collectionkey} mean and std', color = conf['color'], linestyle = conf['linestyle'])
         plt.fill_between( frequencies, 20*np.log10(((mean-std) / T_ref).freq[0]), 20*np.log10(((mean+std) / T_ref).freq[0]), color = ax.lines[-1].get_color(), alpha=0.2 )
     
